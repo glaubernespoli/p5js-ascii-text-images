@@ -1,37 +1,36 @@
-const density = "Ñ@#W$9876543210?!abc;:+=-,._                    ";
-//const density = "         .:░▒▓█";
+//const density = "Ñ@#W$9876543210?!abc;:+=-,._                    ";
+const density = "         .:░▒▓█";
 
-let cat;
-
-function preload() {
-  cat = loadImage("cat2.jpg");
-}
+let video;
+let asciiDiv;
 
 function setup() {
   noCanvas();
+  video = createCapture(VIDEO);
+  video.size(256, 256);
+  asciiDiv = createDiv();
+}
 
-  background(0);
-  //image(cat, 0, 0, width, height);
+function draw() {
+  video.loadPixels();
 
-  let w = width / cat.width;
-  let h = height / cat.height;
-  cat.loadPixels();
-
-  for (let j = 0; j < cat.height; j++) {
-    let row = "";
-    for (let i = 0; i < cat.width; i++) {
-      const pixelIndex = (i + j * cat.width) * 4;
-      const r = cat.pixels[pixelIndex + 0];
-      const g = cat.pixels[pixelIndex + 1];
-      const b = cat.pixels[pixelIndex + 2];
+  let asciiImage = "";
+  for (let j = 0; j < video.height; j++) {
+    for (let i = 0; i < video.width; i++) {
+      const pixelIndex = (i + j * video.width) * 4;
+      const r = video.pixels[pixelIndex + 0];
+      const g = video.pixels[pixelIndex + 1];
+      const b = video.pixels[pixelIndex + 2];
 
       const avg = (r + g + b) / 3;
       const len = density.length;
       const charIndex = floor(map(avg, 0, 255, len, 0));
 
       const c = density.charAt(charIndex);
-      row += c == " " ? "&nbsp" : density.charAt(charIndex);
+      asciiImage += c == " " ? "&nbsp" : density.charAt(charIndex);
     }
-    createDiv(row);
+    asciiImage += "<br/>";
   }
+
+  asciiDiv.html(asciiImage);
 }
